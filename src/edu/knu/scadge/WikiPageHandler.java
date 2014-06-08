@@ -4,11 +4,13 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.*;
+import java.util.Date;
 
 public class WikiPageHandler extends DefaultHandler
 {
   private static final String LAST_ARTICLE_FILE = "assets/last_processed_article.txt";
 
+  private static int count = 0;
   private PageHandler innerHandler;
   private StringBuffer currentPage = new StringBuffer();
   private StringBuffer currentTitle = new StringBuffer();
@@ -78,7 +80,7 @@ public class WikiPageHandler extends DefaultHandler
 
         try
         {
-          BufferedWriter out = new BufferedWriter(new FileWriter("/home/scadge/wikipages/".concat( currentTitle.toString().replaceAll( "/", " " ) ).concat( ".txt" )));
+          BufferedWriter out = new BufferedWriter( new FileWriter( "/home/scadge/wikipages/".concat( currentTitle.toString().replaceAll( "/", " " ) ).concat( ".txt" ) ) );
           out.write( currentPage.toString() );
           out.close();
         }
@@ -103,6 +105,12 @@ public class WikiPageHandler extends DefaultHandler
       }
 
       isInTitle = false;
+
+      count++;
+      if( count % 1000 == 0 )
+      {
+        System.out.println( new Date() + ": Processed " + count + " articles" );
+      }
     }
   }
 
