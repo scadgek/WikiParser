@@ -4,6 +4,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.Date;
 
 public class WikiPageHandler extends DefaultHandler
@@ -11,6 +12,8 @@ public class WikiPageHandler extends DefaultHandler
   private static final String LAST_ARTICLE_FILE = "assets/last_processed_article.txt";
 
   private static int count = 0;
+  private Date lastDate;
+  private double averageTimeForArticle = 0;
   private PageHandler innerHandler;
   private StringBuffer currentPage = new StringBuffer();
   private StringBuffer currentTitle = new StringBuffer();
@@ -23,6 +26,7 @@ public class WikiPageHandler extends DefaultHandler
   {
     this.innerHandler = innerHandler;
     savedInit = getLast();
+    lastDate = new Date();
   }
 
   private String getLast()
@@ -80,7 +84,7 @@ public class WikiPageHandler extends DefaultHandler
 
         try
         {
-          BufferedWriter out = new BufferedWriter( new FileWriter( "/home/scadge/wikipages/".concat( currentTitle.toString().replaceAll( "/", " " ) ).concat( ".txt" ) ) );
+          BufferedWriter out = new BufferedWriter( new FileWriter( "/home/scadge/wikipages/".concat( String.valueOf( count ) ).concat( ". " + currentTitle.toString().replaceAll( "/", " " ) + ".txt" ) ) );
           out.write( currentPage.toString() );
           out.close();
         }
@@ -109,7 +113,10 @@ public class WikiPageHandler extends DefaultHandler
       count++;
       if( count % 1000 == 0 )
       {
-        System.out.println( new Date() + ": Processed " + count + " articles" );
+        Date newDate = new Date();
+        long secondsPassed = (newDate.getTime() - lastDate.getTime()) / 1000;
+        averageTimeForArticle = (averageTimeForArticle + secondsPassed) / count;
+        System.out.println( newDate + ": Processed " + count + " articles, " + secondsPassed + " seconds passed. Average time for article: " + new DecimalFormat( "##.##").format( averageTimeForArticle ) + " seconds" );
       }
     }
   }
