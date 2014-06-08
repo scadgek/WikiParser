@@ -35,9 +35,7 @@ public class Main
       System.exit( 0 );
     }
 
-    PageHandler wikiPageHandler = null;
-
-    WikiXMLParser wikiParser = new WikiSAXParser();
-    wikiParser.parse( wikiStream, new WikiPageHandler( null ) );
+    WikiXMLParser wikiParser = new WikiStAXParser();
+    wikiParser.parse( wikiStream, null );
   }
 }
