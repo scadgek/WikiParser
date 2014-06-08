@@ -12,6 +12,7 @@ public class WikiPageHandler extends DefaultHandler
 {
   private static final String LAST_ARTICLE_FILE = "assets/last_processed_article.txt";
 
+  private long totalTime = 0;
   private String currentFolder = "wikipages-0";
   private int currentFolderNumber = 0;
   private static int count = 0;
@@ -123,7 +124,8 @@ public class WikiPageHandler extends DefaultHandler
       {
         Date newDate = new Date();
         long secondsPassed = (newDate.getTime() - lastDate.getTime()) / 1000;
-        averageTimeForArticle = (averageTimeForArticle + secondsPassed) / count;
+        totalTime += secondsPassed;
+        averageTimeForArticle = totalTime / count;
         System.out.println( newDate + ": Processed " + count + " articles, " + secondsPassed + " seconds passed. Average time for article: " + new DecimalFormat( "##.##").format( averageTimeForArticle ) + " seconds" );
         lastDate = newDate;
       }
