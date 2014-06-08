@@ -26,6 +26,11 @@ public class WikiStAXParser implements WikiXMLParser
   private String savedInit;
   private boolean articleShouldBeProcessed = false;
 
+  public WikiStAXParser()
+  {
+    savedInit = getLast();
+  }
+
   private String getLast()
   {
     try
@@ -76,7 +81,7 @@ public class WikiStAXParser implements WikiXMLParser
       {
         int event = reader.next();
 
-        switch(event)
+        switch( event )
         {
           case XMLStreamConstants.START_ELEMENT:
             if( reader.getLocalName().equalsIgnoreCase( "text" ) )
@@ -103,12 +108,15 @@ public class WikiStAXParser implements WikiXMLParser
           case XMLStreamConstants.END_ELEMENT:
             if( reader.getLocalName().equalsIgnoreCase( "text" ) )
             {
+              count++;
+
               if( articleShouldBeProcessed )
               {
 
                 try
                 {
-                  if(count > currentFolderNumber*10000) {
+                  if( count > currentFolderNumber * 10000 )
+                  {
                     currentFolderNumber++;
                     currentFolder = "wikipages-" + currentFolderNumber;
                     new File( "/home/scadge/wikipages/" + currentFolder ).mkdirs();
@@ -120,6 +128,23 @@ public class WikiStAXParser implements WikiXMLParser
                 catch( IOException e )
                 {
                   System.err.println( e );
+                }
+
+                if( count % 1000 == 0 )
+                {
+                  if( !articleShouldBeProcessed )
+                  {
+                    System.out.println( new Date() + ": Passed " + count + " articles" );
+                  }
+                  else
+                  {
+                    Date newDate = new Date();
+                    long secondsPassed = (newDate.getTime() - lastDate.getTime()) / 1000;
+                    totalTime += secondsPassed;
+                    averageTimeForArticle = (double) totalTime / count;
+                    System.out.println( newDate + ": Processed " + count + " articles, " + secondsPassed + " seconds passed. Average time for article: " + new DecimalFormat( "##.####" ).format( averageTimeForArticle ) + " seconds" );
+                    lastDate = newDate;
+                  }
                 }
               }
 
@@ -138,17 +163,6 @@ public class WikiStAXParser implements WikiXMLParser
               }
 
               isInTitle = false;
-
-              count++;
-              if( count % 1000 == 0 )
-              {
-                Date newDate = new Date();
-                long secondsPassed = (newDate.getTime() - lastDate.getTime()) / 1000;
-                totalTime += secondsPassed;
-                averageTimeForArticle = (double) totalTime / count;
-                System.out.println( newDate + ": Processed " + count + " articles, " + secondsPassed + " seconds passed. Average time for article: " + new DecimalFormat( "##.####").format( averageTimeForArticle ) + " seconds" );
-                lastDate = newDate;
-              }
             }
             break;
         }
