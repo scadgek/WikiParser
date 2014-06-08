@@ -125,7 +125,7 @@ public class WikiPageHandler extends DefaultHandler
         Date newDate = new Date();
         long secondsPassed = (newDate.getTime() - lastDate.getTime()) / 1000;
         totalTime += secondsPassed;
-        averageTimeForArticle = totalTime / count;
+        averageTimeForArticle = (double) totalTime / count;
         System.out.println( newDate + ": Processed " + count + " articles, " + secondsPassed + " seconds passed. Average time for article: " + new DecimalFormat( "##.##").format( averageTimeForArticle ) + " seconds" );
         lastDate = newDate;
       }
