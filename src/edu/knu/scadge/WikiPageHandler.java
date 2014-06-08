@@ -91,9 +91,9 @@ public class WikiPageHandler extends DefaultHandler
           if(count > currentFolderNumber*10000) {
             currentFolderNumber++;
             currentFolder = "wikipages-" + currentFolderNumber;
-            new File( "/home/scadge/wikipages/" + currentFolder ).mkdirs();
+            new File( "assets/wikipages/" + currentFolder ).mkdirs();
           }
-          BufferedWriter out = new BufferedWriter( new FileWriter( "/home/scadge/wikipages/".concat( currentFolder ).concat( "/" ).concat( String.valueOf( count ) ).concat( ". " + currentTitle.toString().replaceAll( "/", " " ) + ".txt" ) ) );
+          BufferedWriter out = new BufferedWriter( new FileWriter( "assets/wikipages/".concat( currentFolder ).concat( "/" ).concat( String.valueOf( count ) ).concat( ". " + currentTitle.toString().replaceAll( "/", " " ) + ".txt" ) ) );
           out.write( currentPage.toString() );
           out.close();
         }
