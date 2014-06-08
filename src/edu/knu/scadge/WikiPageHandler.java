@@ -4,6 +4,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.util.Date;
 
@@ -11,6 +12,8 @@ public class WikiPageHandler extends DefaultHandler
 {
   private static final String LAST_ARTICLE_FILE = "assets/last_processed_article.txt";
 
+  private String currentFolder = "wikipages-0";
+  private int currentFolderNumber = 0;
   private static int count = 0;
   private Date lastDate;
   private double averageTimeForArticle = 0;
@@ -84,7 +87,12 @@ public class WikiPageHandler extends DefaultHandler
 
         try
         {
-          BufferedWriter out = new BufferedWriter( new FileWriter( "/home/scadge/wikipages/".concat( String.valueOf( count ) ).concat( ". " + currentTitle.toString().replaceAll( "/", " " ) + ".txt" ) ) );
+          if(count > currentFolderNumber*10000) {
+            currentFolderNumber++;
+            currentFolder = "wikipages-" + currentFolderNumber;
+            new File( "/home/scadge/wikipages/" + currentFolder ).mkdirs();
+          }
+          BufferedWriter out = new BufferedWriter( new FileWriter( "/home/scadge/wikipages/".concat( currentFolder ).concat( "/" ).concat( String.valueOf( count ) ).concat( ". " + currentTitle.toString().replaceAll( "/", " " ) + ".txt" ) ) );
           out.write( currentPage.toString() );
           out.close();
         }
@@ -117,6 +125,7 @@ public class WikiPageHandler extends DefaultHandler
         long secondsPassed = (newDate.getTime() - lastDate.getTime()) / 1000;
         averageTimeForArticle = (averageTimeForArticle + secondsPassed) / count;
         System.out.println( newDate + ": Processed " + count + " articles, " + secondsPassed + " seconds passed. Average time for article: " + new DecimalFormat( "##.##").format( averageTimeForArticle ) + " seconds" );
+        lastDate = newDate;
       }
     }
   }
